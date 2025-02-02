@@ -1,0 +1,87 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  _id: ID!
+  email: String!
+  name: String!
+}
+
+type Event {
+  _id: ID!
+  title: String!
+  description: String!
+  date: DateTime!
+  organizer: User!
+  rsvps: [RSVP!]!
+  isFrozen: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type RSVP {
+  _id: ID!
+  user: User!
+  status: String!
+  eventId: ID!
+}
+
+type LoginResponse {
+  accessToken: String!
+  user: User!
+}
+
+type Query {
+  events: [Event!]!
+  event(id: ID!): Event!
+  me: User!
+}
+
+type Mutation {
+  createEvent(createEventInput: CreateEventInput!): Event!
+  updateEvent(updateEventInput: UpdateEventInput!): Event!
+  deleteEvent(id: ID!): Event!
+  createRSVP(createRSVPInput: CreateRSVPInput!): RSVP!
+  updateRSVP(updateRSVPInput: UpdateRSVPInput!): RSVP!
+  freezeEvent(id: ID!): Event!
+  createUser(createUserInput: CreateUserInput!): User!
+  login(loginInput: LoginInput!): LoginResponse!
+}
+
+input CreateEventInput {
+  title: String!
+  description: String!
+  date: DateTime!
+}
+
+input UpdateEventInput {
+  id: ID!
+  title: String
+  description: String
+  date: DateTime
+}
+
+input CreateRSVPInput {
+  eventId: ID!
+  status: String!
+}
+
+input UpdateRSVPInput {
+  id: ID!
+  status: String!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  name: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
