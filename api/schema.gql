@@ -38,6 +38,7 @@ type LoginResponse {
 type Query {
   events: [Event!]!
   event(id: ID!): Event!
+  myEvents: [Event!]!
   me: User!
 }
 

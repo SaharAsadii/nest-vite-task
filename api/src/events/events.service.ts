@@ -32,7 +32,7 @@ export class EventsService {
       .populate("organizer")
       .populate("rsvps")
       .exec()
-    console.log({ events })
+
     return events.filter((event) => !!event.organizer)
   }
 
@@ -48,15 +48,23 @@ export class EventsService {
         },
       })
       .exec()
-    console.log({ event: event?.rsvps?.[0] })
+
     if (!event) {
       throw new NotFoundException(`Event #${id} not found`)
     }
     return event
   }
 
+  async findMyEvents(user: User): Promise<Event[]> {
+    const events = await this.eventModel
+      .find({ organizer: user._id })
+      .populate("organizer")
+      .populate("rsvps")
+      .exec()
+    return events.filter((event) => !!event.organizer)
+  }
+
   async create(createEventInput: CreateEventInput, user: User): Promise<Event> {
-    console.log({ user, createEventInput })
     const createdEvent = new this.eventModel({
       ...createEventInput,
       organizer: user._id,

@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   const onSubmit = async (data: { email: string; password: string }) => {
     try {
       const result = await login({ variables: data });
-      console.log({ result });
+
       setUserInfo(result.data.login);
 
       navigate("/");

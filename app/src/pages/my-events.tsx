@@ -1,86 +1,105 @@
 import type React from "react";
 import { useQuery, gql } from "@apollo/client";
 import { Link } from "react-router-dom";
-import { Loader } from "lucide-react";
+import { Loader, Calendar, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 
 const GET_MY_EVENTS = gql`
   query GetMyEvents {
-    me {
+    myEvents {
       _id
-      name
-      events {
+      title
+      description
+      date
+      rsvps {
         _id
-        title
-        description
-        date
-        rsvps {
+        user {
           _id
-          user {
-            _id
-            name
-          }
-          status
+          name
         }
-        isFrozen
+        status
       }
+      isFrozen
     }
   }
 `;
 
 const MyEvents: React.FC = () => {
-  const { isAuthenticated } = useAuth(); // Assuming you have an AuthContext
+  const { isAuthenticated } = useAuth();
 
   const { loading, error, data } = useQuery(GET_MY_EVENTS, {
-    skip: !isAuthenticated, // Skip the query if the user is not authenticated
+    skip: !isAuthenticated,
   });
 
   if (!isAuthenticated) {
     return (
-      <p className="mt-24 text-center text-primary ">
+      <p className="mt-24 text-center text-primary">
         Please log in to view the events.
       </p>
     );
   }
 
-  if (loading) return <Loader className="animate-spin" />;
-  if (error) return <p>Error: {error.message}</p>;
-  console.log({ data });
-  const { me } = data;
+  if (loading) return <Loader className="animate-spin mx-auto mt-24" />;
+  if (error)
+    return (
+      <p className="text-red-500 text-center mt-24">Error: {error.message}</p>
+    );
+
+  const { myEvents } = data;
 
   return (
-    <div className="max-w-screen-xl mx-auto shadow-lg p-8 bg-white rounded-lg">
-      <h1 className="font-bold mb-8">My events</h1>
+    <div className="max-w-screen-xl mx-auto shadow-lg p-8 bg-white rounded-lg mt-8">
+      <h1 className="text-2xl font-bold mb-8 text-center">My Events</h1>
 
-      {me.events.map(
-        (event: {
-          _id: string;
-          title: string;
-          description: string;
-          date: string;
-          rsvps: {
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {myEvents.map(
+          (event: {
             _id: string;
-            user: { _id: string; name: string };
-            status: string;
-          }[];
-          isFrozen: boolean;
-        }) => (
-          <div key={event._id} className="mb-4">
-            <div>
-              <p>{event.title}</p>
-            </div>
-            <div>
-              <p>{event.description}</p>
-              <p>Date: {new Date(event.date).toLocaleString()}</p>
-              <p>rsvps: {event.rsvps.length}</p>
-              <p>Status: {event.isFrozen ? "Frozen" : "Open"}</p>
-              <Link to={`/event/${event._id}`}>
-                <button className="mt-2">View Details</button>
+            title: string;
+            description: string;
+            date: string;
+            rsvps: {
+              _id: string;
+              user: { _id: string; name: string };
+              status: string;
+            }[];
+            isFrozen: boolean;
+          }) => (
+            <div
+              key={event._id}
+              className={`p-6 rounded-lg overflow-hidden shadow-lg ${
+                event.isFrozen ? "bg-red-100" : "bg-green-100"
+              }`}
+            >
+              <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
+              <p className="text-gray-700 mb-4">{event.description}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-gray-500 mb-2">
+                  <Calendar className="inline-block mr-2" size={16} />
+                  Date: {new Date(event.date).toLocaleDateString()}
+                </p>
+                <p className="text-gray-500 mb-4">
+                  <User className="inline-block mr-2" size={16} />
+                  RSVPs: {event.rsvps.length}
+                </p>
+              </div>
+              <p className="text-gray-500 mb-2">
+                Status: {event.isFrozen ? "Frozen" : "Open"}
+              </p>
+              <Link
+                to={`/event/${event._id}`}
+                className={`w-full flex justify-center mt-4 text-white px-4 py-2 rounded transition duration-300 ${
+                  event.isFrozen
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                View Details
               </Link>
             </div>
-          </div>
-        )
-      )}
+          )
+        )}
+      </div>
     </div>
   );
 };

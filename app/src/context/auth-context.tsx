@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
-    console.log(savedUser, "---savedUser---", { token });
+
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     accessToken: string;
     user: UserType;
   }) => {
-    // Implement your login logic here
     setUser(user);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(user));

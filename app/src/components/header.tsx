@@ -6,7 +6,7 @@ import { useAuth } from "@/context/auth-context";
 
 const Header: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
-  console.log({ isAuthenticated });
+
   return (
     <header className="bg-primary text-primary-foreground fixed top-0 w-full z-10 text-white">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">

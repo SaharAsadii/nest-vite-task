@@ -28,6 +28,12 @@ export class EventsResolver {
     return this.eventsService.findOne(id)
   }
 
+  @Query(() => [Event])
+  @UseGuards(GqlAuthGuard)
+  async myEvents(@CurrentUser() user: User): Promise<Event[]> {
+    return this.eventsService.findMyEvents(user)
+  }
+
   @Mutation(() => Event)
   @UseGuards(GqlAuthGuard)
   async createEvent(
