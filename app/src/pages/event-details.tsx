@@ -2,7 +2,7 @@ import type React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { Calendar, Loader, User } from "lucide-react";
-import { Select } from "@/components";
+import { Button, Select } from "@/components";
 import { useAuth } from "@/context/auth-context";
 
 const GET_EVENT = gql`
@@ -98,12 +98,13 @@ const EventDetails: React.FC = () => {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto shadow-lg p-8 bg-white rounded-lg mt-10">
-      <h1 className="text-3xl font-bold mb-8 text-center">{event.title}</h1>
-
+    <div className="max-w-screen-xl mx-auto shadow-lg md:p-8 p-4 bg-white rounded-lg py-16">
+      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">
+        {event.title}
+      </h1>
       <div className="space-y-4">
         <p className="text-gray-700">{event.description}</p>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500">
             <Calendar className="inline-block mr-2" size={16} />
             Date: {new Date(event.date).toLocaleString()}
@@ -113,57 +114,70 @@ const EventDetails: React.FC = () => {
             Organizer: {event.organizer.name}
           </p>
         </div>
+        <hr />
         <h3 className="mt-4 mb-2 font-bold text-lg">RSVPs:</h3>
         <ul className="space-y-2">
-          {event.rsvps.map(
-            (rsvp: { _id: string; user: { name: string }; status: string }) => (
-              <li
-                key={rsvp._id}
-                className="flex justify-between items-center p-2 bg-gray-100 rounded-md"
-              >
-                <span>{rsvp.user.name}</span>
-                <span
-                  className={`px-2 py-1 rounded-full text-white ${
-                    rsvp.status === "yes"
-                      ? "bg-green-500"
-                      : rsvp.status === "no"
-                      ? "bg-red-500"
-                      : "bg-yellow-500"
-                  }`}
+          {event.rsvps?.length === 0 ? (
+            <li className="flex justify-between items-center p-2 bg-gray-100 rounded-md">
+              <span>No RSVPs yet</span>
+            </li>
+          ) : (
+            event.rsvps.map(
+              (rsvp: {
+                _id: string;
+                user: { name: string };
+                status: string;
+              }) => (
+                <li
+                  key={rsvp._id}
+                  className="flex justify-between items-center p-2 bg-gray-100 rounded-md"
                 >
-                  {rsvp.status}
-                </span>
-              </li>
+                  <span>{rsvp.user.name}</span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white ${
+                      rsvp.status === "yes"
+                        ? "bg-green-500"
+                        : rsvp.status === "no"
+                        ? "bg-red-500"
+                        : "bg-yellow-500"
+                    }`}
+                  >
+                    {rsvp.status}
+                  </span>
+                </li>
+              )
             )
           )}
         </ul>
-        {user && !event.isFrozen && (
-          <div className="mt-4">
-            <Select
-              label="RSVP status"
-              onChange={(e) => handleRSVP(e.target.value)}
-              defaultValue={userRSVP?.status || ""}
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-                { value: "maybe", label: "Maybe" },
-              ]}
-            />
+        <hr />
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+          {user && !event.isFrozen && (
+            <div className="mt-4 flex-1 w-full">
+              <Select
+                label="RSVP status"
+                onChange={(e) => handleRSVP(e.target.value)}
+                defaultValue={userRSVP?.status || ""}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                  { value: "maybe", label: "Maybe" },
+                ]}
+              />
+            </div>
+          )}
+          <div className="flex-1 w-full">
+            {user?._id === event.organizer._id && !event.isFrozen && (
+              <Button onClick={handleFreezeEvent} className="mb-4">
+                Freeze RSVPs
+              </Button>
+            )}
+            {event.isFrozen && (
+              <p className="mt-4 font-bold text-center text-red-500">
+                RSVPs are frozen for this event.
+              </p>
+            )}
           </div>
-        )}
-        {user?._id === event.organizer._id && !event.isFrozen && (
-          <button
-            onClick={handleFreezeEvent}
-            className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-          >
-            Freeze RSVPs
-          </button>
-        )}
-        {event.isFrozen && (
-          <p className="mt-4 font-bold text-center text-red-500">
-            RSVPs are frozen for this event.
-          </p>
-        )}
+        </div>
       </div>
     </div>
   );

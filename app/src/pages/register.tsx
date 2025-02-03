@@ -40,8 +40,10 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto shadow-lg p-8 bg-white rounded-lg">
-      <h1 className="font-bold mb-8">Register</h1>
+    <div className="max-w-md mx-auto shadow-lg p-8 bg-white rounded-lg py-16">
+      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">
+        Register
+      </h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>

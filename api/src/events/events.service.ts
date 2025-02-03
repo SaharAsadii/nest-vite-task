@@ -61,6 +61,7 @@ export class EventsService {
       .populate("organizer")
       .populate("rsvps")
       .exec()
+
     return events.filter((event) => !!event.organizer)
   }
 

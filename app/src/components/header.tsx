@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   return (
     <header className="bg-primary text-primary-foreground fixed top-0 w-full z-10 text-white">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold">
+        <Link to="/" className="md:text-2xl text-lg font-bold">
           Event Platform
         </Link>
         <nav className="flex items-center">

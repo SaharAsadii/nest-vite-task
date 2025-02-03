@@ -15,7 +15,6 @@ const GET_MY_EVENTS = gql`
         _id
         user {
           _id
-          name
         }
         status
       }
@@ -48,8 +47,10 @@ const MyEvents: React.FC = () => {
   const { myEvents } = data;
 
   return (
-    <div className="max-w-screen-xl mx-auto shadow-lg p-8 bg-white rounded-lg mt-8">
-      <h1 className="text-2xl font-bold mb-8 text-center">My Events</h1>
+    <div className="max-w-screen-xl mx-auto p-8 py-16">
+      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">
+        My Events
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {myEvents.map(
@@ -67,9 +68,7 @@ const MyEvents: React.FC = () => {
           }) => (
             <div
               key={event._id}
-              className={`p-6 rounded-lg overflow-hidden shadow-lg ${
-                event.isFrozen ? "bg-red-100" : "bg-green-100"
-              }`}
+              className={`p-6 rounded-lg overflow-hidden shadow-lg`}
             >
               <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
               <p className="text-gray-700 mb-4">{event.description}</p>
