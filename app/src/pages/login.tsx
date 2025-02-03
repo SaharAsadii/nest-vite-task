@@ -2,7 +2,7 @@ import type React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import { Button, Input } from "@/components";
+import { Button, Input, Title } from "@/components";
 import { useAuth } from "@/context/auth-context";
 
 const LOGIN_MUTATION = gql`
@@ -34,7 +34,9 @@ const Login: React.FC = () => {
 
       setUserInfo(result.data.login);
 
-      navigate("/");
+      const redirectTo =
+        new URLSearchParams(location.search).get("redirectTo") || "/";
+      navigate(redirectTo);
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -42,8 +44,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto shadow-lg p-8 bg-white rounded-lg py-16">
-      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">Login</h1>
-
+      <Title>Login</Title>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <Input

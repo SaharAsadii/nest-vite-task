@@ -1,8 +1,8 @@
 import type React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { Calendar, Loader, User } from "lucide-react";
-import { Button, Select } from "@/components";
+import { Calendar, Frown, Ghost, Laugh, Loader, User } from "lucide-react";
+import { Button, Select, Title } from "@/components";
 import { useAuth } from "@/context/auth-context";
 
 const GET_EVENT = gql`
@@ -99,9 +99,7 @@ const EventDetails: React.FC = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto shadow-lg md:p-8 p-4 bg-white rounded-lg py-16">
-      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">
-        {event.title}
-      </h1>
+      <Title>{event.title}</Title>
       <div className="space-y-4">
         <p className="text-gray-700">{event.description}</p>
         <div className="flex flex-col md:flex-row justify-between items-center">
@@ -134,7 +132,7 @@ const EventDetails: React.FC = () => {
                 >
                   <span>{rsvp.user.name}</span>
                   <span
-                    className={`px-2 py-1 rounded-full text-white ${
+                    className={`flex items-center  px-2 py-1 rounded-full text-white ${
                       rsvp.status === "yes"
                         ? "bg-green-500"
                         : rsvp.status === "no"
@@ -142,7 +140,14 @@ const EventDetails: React.FC = () => {
                         : "bg-yellow-500"
                     }`}
                   >
-                    {rsvp.status}
+                    {rsvp.status === "yes" ? (
+                      <Laugh className="mx-1 animate-bounce" />
+                    ) : rsvp.status === "no" ? (
+                      <Frown className="mx-1" />
+                    ) : (
+                      <Ghost className="mx-1" />
+                    )}
+                    {rsvp.status.toLocaleUpperCase()}
                   </span>
                 </li>
               )
@@ -151,7 +156,7 @@ const EventDetails: React.FC = () => {
         </ul>
         <hr />
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
-          {user && !event.isFrozen && (
+          {user && !event.isFrozen ? (
             <div className="mt-4 flex-1 w-full">
               <Select
                 label="RSVP status"
@@ -164,6 +169,10 @@ const EventDetails: React.FC = () => {
                 ]}
               />
             </div>
+          ) : (
+            <p className="animate-bounce text-yellow-600 font-bold">
+              Please login to RSVP
+            </p>
           )}
           <div className="flex-1 w-full">
             {user?._id === event.organizer._id && !event.isFrozen && (

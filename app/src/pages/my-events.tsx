@@ -3,6 +3,7 @@ import { useQuery, gql } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { Loader, Calendar, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { Title } from "@/components";
 
 const GET_MY_EVENTS = gql`
   query GetMyEvents {
@@ -47,11 +48,8 @@ const MyEvents: React.FC = () => {
   const { myEvents } = data;
 
   return (
-    <div className="max-w-screen-xl mx-auto p-8 py-16">
-      <h1 className="text-lg md:text-2xl font-bold mb-16 text-center">
-        My Events
-      </h1>
-
+    <div className="max-w-screen-xl mx-auto px-4 py-8">
+      <Title>My Events</Title>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {myEvents.map(
           (event: {

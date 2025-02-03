@@ -1,11 +1,12 @@
 import type React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { Button } from "./button";
 import { useAuth } from "@/context/auth-context";
 
 const Header: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
+  const location = useLocation();
 
   return (
     <header className="bg-primary text-primary-foreground fixed top-0 w-full z-10 text-white">
@@ -27,7 +28,10 @@ const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="mr-4">
+              <Link
+                to={`/login?redirectTo=${location.pathname}`}
+                className="mr-4"
+              >
                 <Button>Login</Button>
               </Link>
               <Link to="/register">
