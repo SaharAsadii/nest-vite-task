@@ -1,34 +1,37 @@
 import type React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../hooks/use-auth";
+import { LogOut } from "lucide-react";
+import { Button } from "./button";
+import { useAuth } from "@/context/auth-context";
 
 const Header: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
   console.log({ isAuthenticated });
   return (
-    <header className="bg-primary text-primary-foreground">
+    <header className="bg-primary text-primary-foreground fixed top-0 w-full z-10 text-white">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold">
           Event Platform
         </Link>
-        <nav>
+        <nav className="flex items-center">
           {isAuthenticated ? (
             <>
               <Link to="/create-event" className="mr-4">
-                <button>Create Event</button>
+                <Button>Create Event</Button>
               </Link>
               <Link to="/my-events" className="mr-4">
-                <button>My Events</button>
+                <Button>My Events</Button>
               </Link>
-              <button onClick={logout}>Logout</button>
+
+              <LogOut className="cursor-pointer" onClick={logout} />
             </>
           ) : (
             <>
               <Link to="/login" className="mr-4">
-                <button>Login</button>
+                <Button>Login</Button>
               </Link>
               <Link to="/register">
-                <button>Register</button>
+                <Button>Register</Button>
               </Link>
             </>
           )}
@@ -38,4 +41,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export { Header };

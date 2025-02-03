@@ -1,6 +1,8 @@
 import type React from "react";
 import { useQuery, gql } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { Loader } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 const GET_MY_EVENTS = gql`
   query GetMyEvents {
@@ -27,16 +29,29 @@ const GET_MY_EVENTS = gql`
 `;
 
 const MyEvents: React.FC = () => {
-  const { loading, error, data } = useQuery(GET_MY_EVENTS);
+  const { isAuthenticated } = useAuth(); // Assuming you have an AuthContext
 
-  if (loading) return <p>Loading...</p>;
+  const { loading, error, data } = useQuery(GET_MY_EVENTS, {
+    skip: !isAuthenticated, // Skip the query if the user is not authenticated
+  });
+
+  if (!isAuthenticated) {
+    return (
+      <p className="mt-24 text-center text-primary ">
+        Please log in to view the events.
+      </p>
+    );
+  }
+
+  if (loading) return <Loader className="animate-spin" />;
   if (error) return <p>Error: {error.message}</p>;
-
+  console.log({ data });
   const { me } = data;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4">My Events</h1>
+    <div className="max-w-screen-xl mx-auto shadow-lg p-8 bg-white rounded-lg">
+      <h1 className="font-bold mb-8">My events</h1>
+
       {me.events.map(
         (event: {
           _id: string;

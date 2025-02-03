@@ -1,7 +1,9 @@
 import type React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { useAuth } from "../hooks/use-auth";
+import { Calendar, Loader, User } from "lucide-react";
+import { Select } from "@/components";
+import { useAuth } from "@/context/auth-context";
 
 const GET_EVENT = gql`
   query GetEvent($id: ID!) {
@@ -64,8 +66,8 @@ const EventDetails: React.FC = () => {
   const [freezeEvent] = useMutation(FREEZE_EVENT_MUTATION);
   const { user } = useAuth();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <Loader className="animate-spin mx-auto my-20" />;
+  if (error) return <p className="text-red-500">Error: {error.message}</p>;
 
   const { event } = data;
   const userRSVP = event.rsvps.find(
@@ -96,50 +98,71 @@ const EventDetails: React.FC = () => {
   };
 
   return (
-    <div>
-      <div>
-        <p>{event.title}</p>
-      </div>
-      <div>
-        <p>{event.description}</p>
-        <p>Date: {new Date(event.date).toLocaleString()}</p>
-        <p>Organizer: {event.organizer.name}</p>
-        <h3 className="mt-4 mb-2 font-bold">rsvps:</h3>
-        <ul>
+    <div className="max-w-screen-lg mx-auto shadow-lg p-8 bg-white rounded-lg mt-10">
+      <h1 className="text-3xl font-bold mb-8 text-center">{event.title}</h1>
+
+      <div className="space-y-4">
+        <p className="text-gray-700">{event.description}</p>
+        <div className="flex justify-between items-center">
+          <p className="text-gray-500">
+            <Calendar className="inline-block mr-2" size={16} />
+            Date: {new Date(event.date).toLocaleString()}
+          </p>
+          <p className="text-gray-500">
+            <User className="inline-block mr-2" size={16} />
+            Organizer: {event.organizer.name}
+          </p>
+        </div>
+        <h3 className="mt-4 mb-2 font-bold text-lg">RSVPs:</h3>
+        <ul className="space-y-2">
           {event.rsvps.map(
             (rsvp: { _id: string; user: { name: string }; status: string }) => (
-              <li key={rsvp._id}>
-                {rsvp.user.name}: {rsvp.status}
+              <li
+                key={rsvp._id}
+                className="flex justify-between items-center p-2 bg-gray-100 rounded-md"
+              >
+                <span>{rsvp.user.name}</span>
+                <span
+                  className={`px-2 py-1 rounded-full text-white ${
+                    rsvp.status === "yes"
+                      ? "bg-green-500"
+                      : rsvp.status === "no"
+                      ? "bg-red-500"
+                      : "bg-yellow-500"
+                  }`}
+                >
+                  {rsvp.status}
+                </span>
               </li>
             )
           )}
         </ul>
         {user && !event.isFrozen && (
           <div className="mt-4">
-            <select
+            <Select
+              label="RSVP status"
               onChange={(e) => handleRSVP(e.target.value)}
               defaultValue={userRSVP?.status || ""}
-            >
-              <button>
-                <option value="" disabled>
-                  Select RSVP status
-                </option>
-              </button>
-              <div>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-                <option value="maybe">Maybe</option>
-              </div>
-            </select>
+              options={[
+                { value: "yes", label: "Yes" },
+                { value: "no", label: "No" },
+                { value: "maybe", label: "Maybe" },
+              ]}
+            />
           </div>
         )}
         {user?._id === event.organizer._id && !event.isFrozen && (
-          <button onClick={handleFreezeEvent} className="mt-4">
-            Freeze rsvps
+          <button
+            onClick={handleFreezeEvent}
+            className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+          >
+            Freeze RSVPs
           </button>
         )}
         {event.isFrozen && (
-          <p className="mt-4 font-bold">rsvps are frozen for this event.</p>
+          <p className="mt-4 font-bold text-center text-red-500">
+            RSVPs are frozen for this event.
+          </p>
         )}
       </div>
     </div>

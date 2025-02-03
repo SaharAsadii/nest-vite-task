@@ -2,6 +2,7 @@ import type React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import { Button, Input } from "@/components";
 
 const CREATE_EVENT_MUTATION = gql`
   mutation CreateEvent(
@@ -30,6 +31,7 @@ const CreateEvent: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<{ title: string; description: string; date: string }>();
+
   const [createEvent] = useMutation(CREATE_EVENT_MUTATION);
 
   const navigate = useNavigate();
@@ -48,54 +50,54 @@ const CreateEvent: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <div>
-        <p>Create Event</p>
-      </div>
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label htmlFor="title">Title</label>
-            <input
-              id="title"
-              type="text"
-              {...register("title", { required: "Title is required" })}
-            />
-            <p className="text-red-500">{errors.title?.message as string}</p>
-            {errors.title && (
-              <p className="text-red-500">{errors.title.message}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              {...register("description", {
-                required: "Description is required",
-              })}
-            />
-            <p className="text-red-500">
-              {errors.description?.message as string}
-            </p>
-            {errors.description && (
-              <p className="text-red-500">{errors.description.message}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="date">Date</label>
-            <input
-              id="date"
-              type="datetime-local"
-              {...register("date", { required: "Date is required" })}
-            />
-            <p className="text-red-500">{errors.date?.message as string}</p>
-            {errors.date && (
-              <p className="text-red-500">{errors.date.message}</p>
-            )}
-          </div>
-          <button type="submit">Create Event</button>
-        </form>
-      </div>
+    <div className="max-w-md mx-auto shadow-lg p-8 bg-white rounded-lg">
+      <h1 className="font-bold mb-16">Create Event</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <Input
+            label={"Title"}
+            placeholder={""}
+            id="title"
+            type="text"
+            {...register("title", { required: "Title is required" })}
+          />
+
+          {errors.title && (
+            <p className="text-red-500 text-xs">{errors.title.message}</p>
+          )}
+        </div>
+        <div>
+          <Input
+            label={"Description"}
+            multiline
+            id="description"
+            {...register("description", {
+              required: "Description is required",
+            })}
+          />
+
+          {errors.description && (
+            <p className="text-red-500 text-xs">{errors.description.message}</p>
+          )}
+        </div>
+        <div>
+          <Input
+            label={"Date"}
+            placeholder={""}
+            id="date"
+            type="datetime-local"
+            {...register("date", { required: "Date is required" })}
+          />
+
+          {errors.date && (
+            <p className="text-red-500 text-xs">{errors.date.message}</p>
+          )}
+        </div>
+        <Button type="submit" className="w-full">
+          Create Event
+        </Button>
+      </form>
     </div>
   );
 };

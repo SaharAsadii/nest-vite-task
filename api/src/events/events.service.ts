@@ -27,15 +27,28 @@ export class EventsService {
   ) {}
 
   async findAll(): Promise<Event[]> {
-    return this.eventModel.find().populate("organizer").populate("rsvps").exec()
+    const events = await this.eventModel
+      .find()
+      .populate("organizer")
+      .populate("rsvps")
+      .exec()
+    console.log({ events })
+    return events.filter((event) => !!event.organizer)
   }
 
   async findOne(id: string): Promise<Event> {
     const event = await this.eventModel
       .findById(id)
       .populate("organizer")
-      .populate("rsvps")
+      .populate({
+        path: "rsvps",
+        populate: {
+          path: "user",
+          model: "User",
+        },
+      })
       .exec()
+    console.log({ event: event?.rsvps?.[0] })
     if (!event) {
       throw new NotFoundException(`Event #${id} not found`)
     }

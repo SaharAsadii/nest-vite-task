@@ -7,15 +7,21 @@ import { AuthResolver } from "./auth.resolver"
 import { LocalStrategy } from "./local.strategy"
 import { JwtStrategy } from "./jwt.strategy"
 import { EventsModule } from "../events/events.module"
+import { ConfigModule, ConfigService } from "@nestjs/config"
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     forwardRef(() => UsersModule),
     forwardRef(() => EventsModule),
     PassportModule,
-    JwtModule.register({
-      secret: "your-secret-key", // In production, use environment variables
-      signOptions: { expiresIn: "60m" },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get("JWT_SECRET"),
+        signOptions: { expiresIn: "60m" },
+      }),
     }),
   ],
   providers: [AuthService, AuthResolver, LocalStrategy, JwtStrategy],
